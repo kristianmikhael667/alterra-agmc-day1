@@ -1,0 +1,330 @@
+{
+	"info": {
+		"_postman_id": "1330fa42-81aa-4418-9ca0-3e28cfc3c2bd",
+		"name": "Task Altera Day 1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12086190"
+	},
+	"item": [
+		{
+			"name": "Binance Spot Test Network",
+			"item": [
+				{
+					"name": "Get recent 1000 BTCUSDT",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "Get BTCUSDT klines data with 1 day interval, start from 1 September 2022 to 7 September 2022 (UTC)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{schema}}://{{domain}}/api/v1/klines?interval=1d&symbol=BTCUSDT&startTime=1662045514000&endTime=1662563914000",
+							"protocol": "{{schema}}",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"klines"
+							],
+							"query": [
+								{
+									"key": "interval",
+									"value": "1d"
+								},
+								{
+									"key": "symbol",
+									"value": "BTCUSDT"
+								},
+								{
+									"key": "startTime",
+									"value": "1662045514000"
+								},
+								{
+									"key": "endTime",
+									"value": "1662563914000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get information of your account",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"const ts  = Date.now();",
+									"pm.environment.set(\"timestamp\", ts);",
+									" ",
+									"let paramsObject = {};",
+									" ",
+									"const binance_api_secret = pm.environment.get(\"api_secret\");",
+									" ",
+									"const parameters = pm.request.url.query;",
+									" ",
+									"parameters.map((param) => {",
+									"    if (param.key != 'signature' && ",
+									"        param.key != 'timestamp' && ",
+									"        !is_empty(param.value) &&",
+									"        !is_disabled(param.disabled)) {",
+									"            paramsObject[param.key] = param.value;",
+									"            //console.log(encodeURIComponent(param.value));",
+									"            //pm.environment.set(param.key, encodeURIComponent(param.value));",
+									"    }",
+									"})",
+									"        ",
+									"Object.assign(paramsObject, {'timestamp': ts});",
+									" ",
+									"if (binance_api_secret) {",
+									"    const queryString = Object.keys(paramsObject).map((key) => {",
+									"        return `${key}=${paramsObject[key]}`;",
+									"    }).join('&');",
+									"    console.log(queryString);",
+									"    const signature = CryptoJS.HmacSHA256(queryString, binance_api_secret).toString();",
+									"    pm.environment.set(\"signature\", signature);",
+									"}",
+									" ",
+									" ",
+									"function is_disabled(str) {",
+									"    return str == true;",
+									"}",
+									" ",
+									"function is_empty(str) {",
+									"    if (typeof str == 'undefined' ||",
+									"        !str || ",
+									"        str.length === 0 || ",
+									"        str === \"\" ||",
+									"        !/[^\\s]/.test(str) ||",
+									"        /^\\s*$/.test(str) ||",
+									"        str.replace(/\\s/g,\"\") === \"\")",
+									"    {",
+									"        return true;",
+									"    }",
+									"    else",
+									"    {",
+									"        return false;",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-MBX-APIKEY",
+								"value": "{{api_key}}",
+								"type": "text"
+							},
+							{
+								"key": "X-MBX-USED-WEIGHT-1M",
+								"value": "4",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{schema}}://{{domain}}/api/v3/account?timestamp={{timestamp}}&signature={{X-MBX-APIKEY}}",
+							"protocol": "{{schema}}",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"v3",
+								"account"
+							],
+							"query": [
+								{
+									"key": "timestamp",
+									"value": "{{timestamp}}"
+								},
+								{
+									"key": "signature",
+									"value": "{{X-MBX-APIKEY}}"
+								},
+								{
+									"key": "recvWindow",
+									"value": "10000",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Timestamps server",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{schema}}://{{domain}}/api/v3/exchangeInfo",
+							"protocol": "{{schema}}",
+							"host": [
+								"{{domain}}"
+							],
+							"path": [
+								"api",
+								"v3",
+								"exchangeInfo"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Books",
+			"item": [
+				{
+					"name": "Delete Book",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://virtserver.swaggerhub.com/sepulsa/RentABook-API/1.0.0/book/1234",
+							"protocol": "https",
+							"host": [
+								"virtserver",
+								"swaggerhub",
+								"com"
+							],
+							"path": [
+								"sepulsa",
+								"RentABook-API",
+								"1.0.0",
+								"book",
+								"1234"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Book",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://virtserver.swaggerhub.com/sepulsa/RentABook-API/1.0.0/book",
+							"protocol": "https",
+							"host": [
+								"virtserver",
+								"swaggerhub",
+								"com"
+							],
+							"path": [
+								"sepulsa",
+								"RentABook-API",
+								"1.0.0",
+								"book"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Store Book",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Book Pro Golang\",\n    \"isbn\": \"1-123-9284-3284921-21\",\n    \"writer\": \"Dr. Mikhael\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://virtserver.swaggerhub.com/sepulsa/RentABook-API/1.0.0/book",
+							"protocol": "https",
+							"host": [
+								"virtserver",
+								"swaggerhub",
+								"com"
+							],
+							"path": [
+								"sepulsa",
+								"RentABook-API",
+								"1.0.0",
+								"book"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Book",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://virtserver.swaggerhub.com/sepulsa/RentABook-API/1.0.0/book/1234",
+							"protocol": "https",
+							"host": [
+								"virtserver",
+								"swaggerhub",
+								"com"
+							],
+							"path": [
+								"sepulsa",
+								"RentABook-API",
+								"1.0.0",
+								"book",
+								"1234"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Book",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"Book Pro Golang Part 2\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://virtserver.swaggerhub.com/sepulsa/RentABook-API/1.0.0/book/1234",
+							"protocol": "https",
+							"host": [
+								"virtserver",
+								"swaggerhub",
+								"com"
+							],
+							"path": [
+								"sepulsa",
+								"RentABook-API",
+								"1.0.0",
+								"book",
+								"1234"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
